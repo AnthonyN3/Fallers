@@ -67,27 +67,26 @@ public class GunSystem : MonoBehaviour
 
         Vector3 direction = cam.transform.forward + new Vector3(x, y, 0);
 
-
         if (Physics.Raycast(cam.transform.position, direction, out rayHit, range, WhatIsEnemy))
         {
-            Debug.Log(rayHit.collider.name);
+            //Debug.Log(rayHit.collider.name);
             // if(rayHit.collider.CompareTag("Player"))
         }
-
-        StartCoroutine(camShake.Shake(camShakeDuration, camShakeMagnitude));
 
         bulletsLeft--;
         bulletsShot--;
 
         // Camera Shake
+        StartCoroutine(camShake.Shake(camShakeDuration, camShakeMagnitude));
+
         Invoke("ResetShot", timeBetweenShooting);
 
         // Bullet Hole and Muzzle Flash
         // Instantiate(bulletHoles, rayHit.point, Quaternion.Euler(0,180,0));
         // Instantiate(muzzleFlash, attackPoint.position, Quaternion.identity);
 
-        if (bulletsShot > 0 && bulletsLeft > 0)
-            Invoke("Shoot", timeBetweenShooting);
+        if (bulletsShot > 0 && bulletsLeft > 0) // this would only be useful for the burst weapons
+            Invoke("Shoot", timeBetweenShots);
     }
 
     private void ResetShot()
