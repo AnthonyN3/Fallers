@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using TMPro;
 
@@ -22,7 +23,11 @@ public class GunSystem : MonoBehaviour
     public float camShakeMagnitude, camShakeDuration;
 
     // MuzzleFlash and BulletHoles
-    //public GameObject muzzleFlash, bulletHoles;
+    public GameObject bulletHoles;
+    public ParticleSystem muzzleFlash;
+
+    // Gun Model
+    public GameObject weaponModel;
 
     // UI & Text
     public TextMeshProUGUI ammoText;
@@ -37,6 +42,8 @@ public class GunSystem : MonoBehaviour
     {
         MyInput();
         ammoText.SetText(bulletsLeft + " / " + magazineSize);
+
+        //weaponModel.transform.Rotate(Vector3.left, 5f,Space.Self);
     }
 
     private void MyInput()
@@ -45,7 +52,7 @@ public class GunSystem : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.R) && bulletsLeft < magazineSize && !reloading)
             Reload();
-
+            
         if (readyToShoot && shooting && !reloading && bulletsLeft > 0)
         {
             bulletsShot = bulletsPerTap;
@@ -69,7 +76,7 @@ public class GunSystem : MonoBehaviour
 
         if (Physics.Raycast(cam.transform.position, direction, out rayHit, range, WhatIsEnemy))
         {
-            //Debug.Log(rayHit.collider.name);
+            Debug.Log(rayHit.collider.name);
             // if(rayHit.collider.CompareTag("Player"))
         }
 
@@ -82,8 +89,11 @@ public class GunSystem : MonoBehaviour
         Invoke("ResetShot", timeBetweenShooting);
 
         // Bullet Hole and Muzzle Flash
-        // Instantiate(bulletHoles, rayHit.point, Quaternion.Euler(0,180,0));
-        // Instantiate(muzzleFlash, attackPoint.position, Quaternion.identity);
+        //GameObject particleObject = Instantiate(muzzleFlash, attackPoint.position, Quaternion.identity);
+        muzzleFlash.Play();
+        Instantiate(bulletHoles, rayHit.point, Quaternion.LookRotation(rayHit.normal));  //Quaternion.Euler(0,180,0));
+        
+        //Destroy(particleObject, 0.25f);
 
         if (bulletsShot > 0 && bulletsLeft > 0) // this would only be useful for the burst weapons
             Invoke("Shoot", timeBetweenShots);
@@ -97,12 +107,27 @@ public class GunSystem : MonoBehaviour
     private void Reload()
     {
         reloading = true;
-        Invoke("ReloadFinished", reloadTime);
+        StartCoroutine(ReloadAnimation(reloadTime));
     }
 
-    private void ReloadFinished()
+    private IEnumerator ReloadAnimation(float duration)
     {
+        Vector3 startRotation = weaponModel.transform.localEulerAngles;
+        float endRotation = startRotation.x - 360.0f;
+        float elapsed = 0.0f;
+        while( elapsed < duration )
+        {
+            elapsed += Time.deltaTime;
+
+            float xRotation = Mathf.Lerp(startRotation.x, endRotation, elapsed / duration) % 360.0f;
+            weaponModel.transform.localEulerAngles = new Vector3(xRotation, startRotation.y, startRotation.z);
+
+            yield return null;
+        }
+
         bulletsLeft = magazineSize;
         reloading = false;
     }
+
+    
 }
