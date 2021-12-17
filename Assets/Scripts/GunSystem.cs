@@ -4,6 +4,7 @@ using TMPro;
 
 public class GunSystem : MonoBehaviour
 {
+    //public bool enableWeapon;
     public int damage;
     public float timeBetweenShooting, spread, range, reloadTime, timeBetweenShots;
     public int magazineSize, bulletsPerTap;
@@ -26,24 +27,33 @@ public class GunSystem : MonoBehaviour
     public GameObject bulletHoles;
     public ParticleSystem muzzleFlash;
 
-    // Gun Model
-    public GameObject weaponModel;
-
     // UI & Text
     public TextMeshProUGUI ammoText;
 
-    private void Awake() 
+    private void Awake()
     {
         bulletsLeft = magazineSize;
-        readyToShoot = true;  
+        readyToShoot = true;
+
+        if (transform.parent != null && transform.parent.name.Equals("WeaponContainer"))
+        { 
+            //enableWeapon = true;
+            gameObject.GetComponent<Rigidbody>().isKinematic = true;
+            GetComponent<GunSystem>().enabled = true;
+        }
+        else
+        { 
+            //enableWeapon = false;
+            gameObject.GetComponent<Rigidbody>().isKinematic = false;
+            GetComponent<GunSystem>().enabled = false;
+        }
     }
 
     private void Update()
     {
+        //if (enableWeapon)
         MyInput();
         ammoText.SetText(bulletsLeft + " / " + magazineSize);
-
-        //weaponModel.transform.Rotate(Vector3.left, 5f,Space.Self);
     }
 
     private void MyInput()
@@ -52,7 +62,7 @@ public class GunSystem : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.R) && bulletsLeft < magazineSize && !reloading)
             Reload();
-            
+
         if (readyToShoot && shooting && !reloading && bulletsLeft > 0)
         {
             bulletsShot = bulletsPerTap;
@@ -76,7 +86,7 @@ public class GunSystem : MonoBehaviour
 
         if (Physics.Raycast(cam.transform.position, direction, out rayHit, range, WhatIsEnemy))
         {
-            Debug.Log(rayHit.collider.name);
+            //Debug.Log(rayHit.collider.name);
             // if(rayHit.collider.CompareTag("Player"))
         }
 
@@ -92,7 +102,7 @@ public class GunSystem : MonoBehaviour
         //GameObject particleObject = Instantiate(muzzleFlash, attackPoint.position, Quaternion.identity);
         muzzleFlash.Play();
         Instantiate(bulletHoles, rayHit.point, Quaternion.LookRotation(rayHit.normal));  //Quaternion.Euler(0,180,0));
-        
+
         //Destroy(particleObject, 0.25f);
 
         if (bulletsShot > 0 && bulletsLeft > 0) // this would only be useful for the burst weapons
@@ -112,15 +122,15 @@ public class GunSystem : MonoBehaviour
 
     private IEnumerator ReloadAnimation(float duration)
     {
-        Vector3 startRotation = weaponModel.transform.localEulerAngles;
+        Vector3 startRotation = transform.localEulerAngles;
         float endRotation = startRotation.x - 360.0f;
         float elapsed = 0.0f;
-        while( elapsed < duration )
+        while (elapsed < duration)
         {
             elapsed += Time.deltaTime;
 
             float xRotation = Mathf.Lerp(startRotation.x, endRotation, elapsed / duration) % 360.0f;
-            weaponModel.transform.localEulerAngles = new Vector3(xRotation, startRotation.y, startRotation.z);
+            transform.localEulerAngles = new Vector3(xRotation, startRotation.y, startRotation.z);
 
             yield return null;
         }
@@ -129,5 +139,9 @@ public class GunSystem : MonoBehaviour
         reloading = false;
     }
 
-    
+    public void resetSystem()
+    {
+        bulletsLeft = magazineSize;
+        readyToShoot = true;
+    }
 }
