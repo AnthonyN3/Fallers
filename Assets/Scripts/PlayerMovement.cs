@@ -16,6 +16,7 @@ public class PlayerMovement : MonoBehaviour
     //Movement
     public float moveSpeed = 4500;
     public float maxSpeed = 20;
+    private float maxSpeedFixed = 20;
     public bool grounded;
     public LayerMask whatIsGround;
 
@@ -28,6 +29,9 @@ public class PlayerMovement : MonoBehaviour
     private Vector3 playerScale;
     public float slideForce = 400;
     public float slideCounterMovement = 0.2f;
+
+    //Walking
+    public float walkSpeed = 1000;
 
     //Jumping
     private bool readyToJump = true;
@@ -99,6 +103,12 @@ public class PlayerMovement : MonoBehaviour
             StartCrouch();
         if (Input.GetKeyUp(KeyCode.LeftControl))
             StopCrouch();
+
+        //Walking
+        if (Input.GetKeyDown(KeyCode.LeftShift))
+            maxSpeed = 2.5f;
+        if (Input.GetKeyUp(KeyCode.LeftShift))
+            maxSpeed = maxSpeedFixed;
     }
 
     private void StartCrouch()

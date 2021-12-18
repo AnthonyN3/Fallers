@@ -1555,6 +1555,7 @@ MonoBehaviour:
   maxSlopeAngle: 35
   slideForce: 400
   slideCounterMovement: 0.2
+  walkSpeed: 1000
   jumpForce: 550
 --- !u!54 &916029594
 Rigidbody:
