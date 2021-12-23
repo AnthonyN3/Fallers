@@ -2138,13 +2138,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ba58521ed5d16974193d73b5ff5fef90, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  damage: 20
-  timeBetweenShooting: 0.05
-  spread: 0.02
+  damage: 15
+  timeBetweenShooting: 0.1
+  spread: 0.04
   range: 100
-  reloadTime: 1
+  reloadTime: 2
   timeBetweenShots: 0
-  magazineSize: 30
+  magazineSize: 100
   bulletsPerTap: 1
   allowButtonHold: 1
   cam: {fileID: 963194227}
