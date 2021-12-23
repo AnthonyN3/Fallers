@@ -6,6 +6,8 @@ using BeardedManStudios.Forge.Networking;
 
 public class NetworkingPlayer : NetworkedPlayerBehavior
 {
+    public Transform playerTransform;
+
     protected override void NetworkStart()
     {
         base.NetworkStart();
@@ -15,9 +17,9 @@ public class NetworkingPlayer : NetworkedPlayerBehavior
         }
 
         if(!networkObject.IsOwner) {
-            transform.parent.Find("CameraContainer").gameObject.SetActive(false);
-            GetComponent<PlayerMovement>().enabled = false;
-            GameObject.DestroyImmediate(GetComponent<Rigidbody>());
+            transform.Find("CameraContainer").gameObject.SetActive(false);
+            playerTransform.GetComponent<PlayerMovement>().enabled = false;
+            Destroy(playerTransform.GetComponent<Rigidbody>());
             return;
         }
 
@@ -29,17 +31,17 @@ public class NetworkingPlayer : NetworkedPlayerBehavior
 
     private void Update() 
     {
-        if(networkObject == null) {
+        if(networkObject == null || playerTransform == null) {
             return;
         }    
 
         if(!networkObject.IsOwner) {
-            transform.position = networkObject.pos;
-            transform.rotation = networkObject.rot;
+            playerTransform.position = networkObject.pos;
+            playerTransform.rotation = networkObject.rot;
             return;
         }
 
-        networkObject.pos = transform.position;
-        networkObject.rot = transform.rotation;
+        networkObject.pos = playerTransform.position;
+        networkObject.rot = playerTransform.rotation;
     }
 }

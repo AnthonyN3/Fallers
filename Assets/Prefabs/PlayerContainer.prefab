@@ -285,7 +285,7 @@ Camera:
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 375
+    m_Bits: 887
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
@@ -389,7 +389,6 @@ GameObject:
   - component: {fileID: 5386941102021308140}
   - component: {fileID: 5386941102021308131}
   - component: {fileID: 5386941102021308128}
-  - component: {fileID: 5386941102021308130}
   m_Layer: 9
   m_Name: Player
   m_TagString: Untagged
@@ -518,18 +517,6 @@ MonoBehaviour:
   slideCounterMovement: 0.2
   walkSpeed: 1000
   jumpForce: 550
---- !u!114 &5386941102021308130
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5386941102021308141}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9242561e43be340ef998d2e4df9ba744, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &5386941102075844030
 GameObject:
   m_ObjectHideFlags: 0
@@ -634,6 +621,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5386941102297631558}
+  - component: {fileID: 5892620848935690673}
   m_Layer: 0
   m_Name: PlayerContainer
   m_TagString: Untagged
@@ -657,6 +645,19 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5892620848935690673
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5386941102297631559}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9242561e43be340ef998d2e4df9ba744, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerTransform: {fileID: 5386941102021308129}
 --- !u!1 &5386941102553701530
 GameObject:
   m_ObjectHideFlags: 0
