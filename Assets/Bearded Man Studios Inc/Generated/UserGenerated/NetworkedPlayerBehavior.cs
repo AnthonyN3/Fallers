@@ -4,8 +4,8 @@ using UnityEngine;
 
 namespace BeardedManStudios.Forge.Networking.Generated
 {
-	[GeneratedRPC("{\"types\":[[\"uint\", \"char\"][\"int\"][\"Vector3\", \"Vector3\"][\"string\", \"float\"][\"char\", \"string\"][\"char\", \"string\", \"Vector3\"][\"char\", \"string\"][\"char\"][][\"int\", \"Vector3\"]]")]
-	[GeneratedRPCVariableNames("{\"types\":[[\"playerId\", \"team\"][\"gunIndex\"][\"hitpoint\", \"hitnormal\"][\"targetName\", \"damage\"][\"flagteam\", \"player\"][\"flagteam\", \"player\", \"newPos\"][\"team\", \"player\"][\"team\"][][\"SoundIndex\", \"pos\"]]")]
+	[GeneratedRPC("{\"types\":[[\"uint\", \"char\"][\"int\"][\"Vector3\", \"Vector3\"][\"string\", \"float\"][\"char\", \"string\"][\"char\", \"string\", \"Vector3\"][\"char\", \"string\"][\"char\"][][\"int\", \"Vector3\"][\"char\"]]")]
+	[GeneratedRPCVariableNames("{\"types\":[[\"playerId\", \"team\"][\"gunIndex\"][\"hitpoint\", \"hitnormal\"][\"targetName\", \"damage\"][\"flagteam\", \"player\"][\"flagteam\", \"player\", \"newPos\"][\"team\", \"player\"][\"team\"][][\"SoundIndex\", \"pos\"][\"winner\"]]")]
 	public abstract partial class NetworkedPlayerBehavior : NetworkBehavior
 	{
 		public const byte RPC_SET_TEAM = 0 + 5;
@@ -18,6 +18,7 @@ namespace BeardedManStudios.Forge.Networking.Generated
 		public const byte RPC_RESPAWN_FLAG = 7 + 5;
 		public const byte RPC_JUMP = 8 + 5;
 		public const byte RPC_PLAY_SOUND = 9 + 5;
+		public const byte RPC_END_GAME = 10 + 5;
 		
 		public NetworkedPlayerNetworkObject networkObject = null;
 
@@ -41,6 +42,7 @@ namespace BeardedManStudios.Forge.Networking.Generated
 			networkObject.RegisterRpc("RespawnFlag", RespawnFlag, typeof(char));
 			networkObject.RegisterRpc("Jump", Jump);
 			networkObject.RegisterRpc("PlaySound", PlaySound, typeof(int), typeof(Vector3));
+			networkObject.RegisterRpc("EndGame", EndGame, typeof(char));
 
 			networkObject.onDestroy += DestroyGameObject;
 
@@ -172,6 +174,10 @@ namespace BeardedManStudios.Forge.Networking.Generated
 		/// Arguments:
 		/// </summary>
 		public abstract void PlaySound(RpcArgs args);
+		/// <summary>
+		/// Arguments:
+		/// </summary>
+		public abstract void EndGame(RpcArgs args);
 
 		// DO NOT TOUCH, THIS GETS GENERATED PLEASE EXTEND THIS CLASS IF YOU WISH TO HAVE CUSTOM CODE ADDITIONS
 	}

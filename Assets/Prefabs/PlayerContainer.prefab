@@ -368,6 +368,7 @@ MonoBehaviour:
   blueflag: {fileID: 8641098174109182073}
   model: {fileID: 9027023586849977306}
   animator: {fileID: 4038403472102157500}
+  endScreen: {fileID: 0}
 --- !u!1 &5386941102553701530
 GameObject:
   m_ObjectHideFlags: 0
@@ -635,7 +636,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9046933872434204384, guid: 9aa6fb7a046fb4fa698c89fcaf117199, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: 0.149
       objectReference: {fileID: 0}
     - target: {fileID: 9046933872434204384, guid: 9aa6fb7a046fb4fa698c89fcaf117199, type: 3}
       propertyPath: m_LocalPosition.y
@@ -643,7 +644,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9046933872434204384, guid: 9aa6fb7a046fb4fa698c89fcaf117199, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -0.862
+      value: -0.209
       objectReference: {fileID: 0}
     - target: {fileID: 9046933872434204384, guid: 9aa6fb7a046fb4fa698c89fcaf117199, type: 3}
       propertyPath: m_LocalRotation.w
