@@ -127,12 +127,13 @@ public class GunSystem : MonoBehaviour
         //Spread
         float x = Random.Range(-spread, spread);
         float y = Random.Range(-spread, spread);
+        float z = Random.Range(-spread, spread);
 
         // More spread if player is running/moving
         // if(rb.velocity.magnitude > 0)
         //     spread = spread*2f;
 
-        Vector3 direction = cam.transform.forward + new Vector3(x, y, 0);
+        Vector3 direction = cam.transform.forward + new Vector3(x, y, z);
 
         if (Physics.Raycast(cam.transform.position, direction, out rayHit, range))
         {
