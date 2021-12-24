@@ -1,9 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using BeardedManStudios.Forge.Networking.Unity;
 using BeardedManStudios.Forge.Networking;
+using TMPro;
+using UnityEngine.UI;
 
 public class LobbyManager : MonoBehaviour
 {
@@ -16,6 +17,12 @@ public class LobbyManager : MonoBehaviour
     
     public Transform RedSpawn;
     public Transform BlueSpawn;
+
+    public GameObject RedFlag;
+    public GameObject BlueFlag;
+
+    private int blueScore = 0;
+    private int redScore = 0;
 
     private void Awake() {
         Instance = this;
@@ -75,5 +82,17 @@ public class LobbyManager : MonoBehaviour
             networkedPlayer.gameObject.transform.rotation = BlueSpawn.rotation;
             Debug.Log("Spawning Blue Player");
         }
+    }
+
+    public void BlueScored()
+    {
+        blueScore++;
+        GameObject.Find("b_score_text").GetComponent<TextMeshProUGUI>().text = blueScore.ToString();
+    }
+
+    public void RedScored()
+    {
+        redScore++;
+        GameObject.Find("r_score_text").GetComponent<TextMeshProUGUI>().text = redScore.ToString();
     }
 }

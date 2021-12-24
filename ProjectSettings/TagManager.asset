@@ -6,6 +6,8 @@ TagManager:
   tags:
   - hp
   - ammo
+  - redflag
+  - blueflag
   layers:
   - Default
   - TransparentFX

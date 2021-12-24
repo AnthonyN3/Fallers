@@ -10,6 +10,8 @@ public class PlayerManager : MonoBehaviour
     public int maxHealth;
     public int curHealth;
 
+    private bool carryingFlag = false;
+
     private TextMeshProUGUI healthText;
 
     private void Awake() 
@@ -21,7 +23,12 @@ public class PlayerManager : MonoBehaviour
     private void Update() 
     {
         if(!player.networkObject.IsOwner) return;
-
+        if(transform.position.y < -10)
+        { 
+            gameObject.GetComponent<Rigidbody>().velocity = Vector3.zero;
+            gameObject.GetComponent<Rigidbody>().angularVelocity = Vector3.zero;
+            player.Die();
+        }
         healthText.SetText(curHealth.ToString());
     }
 
@@ -31,13 +38,77 @@ public class PlayerManager : MonoBehaviour
         if(curHealth <= 0) 
         {
             curHealth = 0;
+            player.DroppedFlag();
             player.Die();
             curHealth = maxHealth;
         }
     }
+
+    public void CarryingFlag()
+    {
+        carryingFlag = true;
+    }
+
+    public void DroppedFlag()
+    {
+        carryingFlag = false;
+    }
     
     private void OnTriggerEnter(Collider other) 
     {
+        if(!player.networkObject.IsOwner) return;
+
+        if(other.CompareTag("redflag") && player.networkObject.team == 'B') 
+        {
+           player.PickedFlag();
+        }
+        if(other.CompareTag("blueflag") && player.networkObject.team == 'R') 
+        {
+            player.PickedFlag();
+        }
+
+        if(other.CompareTag("redflag") && player.networkObject.team == 'R') 
+        {
+            Debug.Log("Collided with friendly flag");
+            float flagDistanceFromSpawn = Vector3.Distance(other.gameObject.transform.position, GameObject.Find("Red_Flag_Spawn").transform.position);
+            if(flagDistanceFromSpawn > 3.0f)
+            {
+                Debug.Log("Flag far from spawn, respawning");
+                player.RespawnedFlag();
+            } 
+            else 
+            {
+                Debug.Log("Flag close to spawn, ignoring");
+                if(carryingFlag)
+                {
+                    Debug.Log("Flag close to spawn, scoring");
+                    player.RespawnedFlag();
+                    player.Scored();
+                }
+            }
+        }
+
+        if(other.CompareTag("blueflag") && player.networkObject.team == 'B') 
+        {
+            Debug.Log("Collided with friendly flag");
+            float flagDistanceFromSpawn = Vector3.Distance(other.gameObject.transform.position, GameObject.Find("Blue_Flag_Spawn").transform.position);
+            if(flagDistanceFromSpawn > 3.0f)
+            {
+                Debug.Log("Flag far from spawn, respawning");
+                player.RespawnedFlag();
+            } 
+            else 
+            {
+                Debug.Log("Flag close to spawn, ignoring");
+                if(carryingFlag)
+                {
+                    Debug.Log("Flag close to spawn, scoring");
+                    player.RespawnedFlag();
+                    player.Scored();
+                }
+            }
+        }
+
         if(other.CompareTag("hp"))
         {
             if(curHealth != maxHealth)
