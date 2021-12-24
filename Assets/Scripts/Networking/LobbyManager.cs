@@ -21,8 +21,8 @@ public class LobbyManager : MonoBehaviour
     public GameObject RedFlag;
     public GameObject BlueFlag;
 
-    private int blueScore = 0;
-    private int redScore = 0;
+    public int blueScore = 0;
+    public int redScore = 0;
 
     private void Awake() {
         Instance = this;
@@ -94,5 +94,10 @@ public class LobbyManager : MonoBehaviour
     {
         redScore++;
         GameObject.Find("r_score_text").GetComponent<TextMeshProUGUI>().text = redScore.ToString();
+    }
+
+    public void LeaveGame()
+    {
+        Application.Quit();
     }
 }

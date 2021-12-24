@@ -4,6 +4,7 @@ using UnityEngine;
 using BeardedManStudios.Forge.Networking.Generated;
 using BeardedManStudios.Forge.Networking;
 using BeardedManStudios.Forge.Networking.Unity;
+using TMPro;
 
 public class NetworkingPlayer : NetworkedPlayerBehavior
 {
@@ -22,6 +23,18 @@ public class NetworkingPlayer : NetworkedPlayerBehavior
     public GameObject model;
     public Animator animator;
 
+    public GameObject endScreen;
+
+    private IEnumerator Start()
+    {
+        while (networkObject == null) yield return null;
+        
+        if(networkObject.IsOwner) {
+            endScreen = GameObject.Find("EndScreen");   
+            endScreen.SetActive(false);
+        } 
+    }
+
     protected override void NetworkStart()
     {
         base.NetworkStart();
@@ -36,6 +49,8 @@ public class NetworkingPlayer : NetworkedPlayerBehavior
             Destroy(playerTransform.GetComponent<Rigidbody>());
             return;
         }
+
+        model.SetActive(false);
 
         networkObject.name = GetInstanceID();
 
@@ -53,7 +68,7 @@ public class NetworkingPlayer : NetworkedPlayerBehavior
             gameObject.name = networkObject.name.ToString();
         }
 
-        animator.SetFloat("walking", networkObject.walking);
+        animator.SetFloat("walking", Mathf.Abs(networkObject.walking));
 
         if(!networkObject.IsOwner) {
             playerTransform.position = networkObject.pos;
@@ -334,5 +349,20 @@ public class NetworkingPlayer : NetworkedPlayerBehavior
         }
 
         GameObject.Find(playerName).GetComponentInChildren<PlayerManager>().DroppedFlag();
+
+        if(networkObject.IsServer) {
+            if(LobbyManager.Instance.redScore == 10 || LobbyManager.Instance.blueScore == 10)
+            {
+                networkObject.SendRpc(RPC_END_GAME, Receivers.AllBuffered, LobbyManager.Instance.redScore > LobbyManager.Instance.blueScore ? 'R' : 'B');
+            }
+        }
+    }
+
+    public override void EndGame(RpcArgs args)
+    {
+        char winner = args.GetNext<char>();
+        endScreen.SetActive(true);
+
+        endScreen.transform.Find("Winner").GetComponent<TextMeshProUGUI>().text = winner == 'R' ? "Red Team" : "Blue Team";
     }
 }
