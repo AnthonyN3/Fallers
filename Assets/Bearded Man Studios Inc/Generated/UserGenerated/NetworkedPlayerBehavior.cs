@@ -4,10 +4,11 @@ using UnityEngine;
 
 namespace BeardedManStudios.Forge.Networking.Generated
 {
-	[GeneratedRPC("{\"types\":[]")]
-	[GeneratedRPCVariableNames("{\"types\":[]")]
+	[GeneratedRPC("{\"types\":[[\"uint\", \"char\"]]")]
+	[GeneratedRPCVariableNames("{\"types\":[[\"playerId\", \"team\"]]")]
 	public abstract partial class NetworkedPlayerBehavior : NetworkBehavior
 	{
+		public const byte RPC_SET_TEAM = 0 + 5;
 		
 		public NetworkedPlayerNetworkObject networkObject = null;
 
@@ -21,6 +22,7 @@ namespace BeardedManStudios.Forge.Networking.Generated
 			networkObject.AttachedBehavior = this;
 
 			base.SetupHelperRpcs(networkObject);
+			networkObject.RegisterRpc("SetTeam", SetTeam, typeof(uint), typeof(char));
 
 			networkObject.onDestroy += DestroyGameObject;
 
@@ -97,6 +99,12 @@ namespace BeardedManStudios.Forge.Networking.Generated
 			networkObject.SnapInterpolations();
 		}
 
+		/// <summary>
+		/// Arguments:
+		/// uint playerId
+		/// char team
+		/// </summary>
+		public abstract void SetTeam(RpcArgs args);
 
 		// DO NOT TOUCH, THIS GETS GENERATED PLEASE EXTEND THIS CLASS IF YOU WISH TO HAVE CUSTOM CODE ADDITIONS
 	}
