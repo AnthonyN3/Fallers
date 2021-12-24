@@ -13,11 +13,14 @@ public class PlayerManager : MonoBehaviour
     private bool carryingFlag = false;
 
     private TextMeshProUGUI healthText;
+    private TextMeshProUGUI flagText;
 
     private void Awake() 
     {
         curHealth = maxHealth;
         healthText = GameObject.Find("health_text").GetComponent<TextMeshProUGUI>();
+        flagText = GameObject.Find("flag_icon").GetComponent<TextMeshProUGUI>();
+        flagText.enabled = false;
     }
 
     private void Update() 
@@ -43,6 +46,7 @@ public class PlayerManager : MonoBehaviour
             {
                 carryingFlag = false;
                 player.DroppedFlag();
+                flagText.enabled = false;
             }
 
             player.Die();
@@ -67,10 +71,14 @@ public class PlayerManager : MonoBehaviour
         if(other.CompareTag("redflag") && player.networkObject.team == 'B') 
         {
            player.PickedFlag();
+           AudioSource.PlayClipAtPoint(SoundManager.instance.sounds[9], transform.position);
+           flagText.enabled = true;
         }
         if(other.CompareTag("blueflag") && player.networkObject.team == 'R') 
         {
             player.PickedFlag();
+            AudioSource.PlayClipAtPoint(SoundManager.instance.sounds[9], transform.position);
+            flagText.enabled = true;
         }
 
         if(other.CompareTag("redflag") && player.networkObject.team == 'R') 
@@ -81,6 +89,7 @@ public class PlayerManager : MonoBehaviour
             {
                 Debug.Log("Flag far from spawn, respawning");
                 player.RespawnedFlag();
+                AudioSource.PlayClipAtPoint(SoundManager.instance.sounds[9], transform.position);
             } 
             else 
             {
@@ -90,6 +99,8 @@ public class PlayerManager : MonoBehaviour
                     Debug.Log("Flag close to spawn, scoring");
                     player.RespawnedFlag();
                     player.Scored();
+                    AudioSource.PlayClipAtPoint(SoundManager.instance.sounds[9], transform.position);
+                    flagText.enabled = false;
                 }
             }
         }
@@ -102,6 +113,7 @@ public class PlayerManager : MonoBehaviour
             {
                 Debug.Log("Flag far from spawn, respawning");
                 player.RespawnedFlag();
+                AudioSource.PlayClipAtPoint(SoundManager.instance.sounds[9], transform.position);
             } 
             else 
             {
@@ -111,14 +123,19 @@ public class PlayerManager : MonoBehaviour
                     Debug.Log("Flag close to spawn, scoring");
                     player.RespawnedFlag();
                     player.Scored();
+                    AudioSource.PlayClipAtPoint(SoundManager.instance.sounds[9], transform.position);
+                    flagText.enabled = false;
                 }
             }
         }
 
         if(other.CompareTag("hp"))
         {
-            if(curHealth != maxHealth)
-                curHealth += other.GetComponent<Hp>().PickUp();
+            int healthInPack = other.GetComponent<Hp>().PickUp();;
+            int healthNeeded = maxHealth - curHealth;
+
+            curHealth += healthNeeded > healthInPack ? healthInPack : healthNeeded;
+            AudioSource.PlayClipAtPoint(SoundManager.instance.sounds[8], transform.position);
         }
         if (other.CompareTag("ammo"))
         {
@@ -128,6 +145,7 @@ public class PlayerManager : MonoBehaviour
             int ammoNeeded = weapon.reservedAmmoMax - weapon.reservedAmmoCur;
 
             weapon.reservedAmmoCur += ammoNeeded > ammoInPack ?  ammoInPack : ammoNeeded;
+            AudioSource.PlayClipAtPoint(SoundManager.instance.sounds[8], transform.position);
         }
     }
 }

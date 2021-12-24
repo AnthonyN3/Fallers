@@ -362,6 +362,8 @@ public class NetworkingPlayer : NetworkedPlayerBehavior
     {
         char winner = args.GetNext<char>();
         endScreen.SetActive(true);
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
 
         endScreen.transform.Find("Winner").GetComponent<TextMeshProUGUI>().text = winner == 'R' ? "Red Team" : "Blue Team";
     }
