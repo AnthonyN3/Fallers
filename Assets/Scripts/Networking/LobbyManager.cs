@@ -43,6 +43,22 @@ public class LobbyManager : MonoBehaviour
         }
     }
 
+    public char GetTeam(BeardedManStudios.Forge.Networking.NetworkingPlayer player)
+    {
+        if(RedTeam.Contains(player))
+        {
+            return 'R';
+        }
+        else if(BlueTeam.Contains(player))
+        {
+            return 'B';
+        }
+        else
+        {
+            return 'N';
+        }
+    }
+
     public void AddNewPlayer(char team, BeardedManStudios.Forge.Networking.Generated.NetworkedPlayerBehavior networkedPlayer)
     {
         if(team == 'R')

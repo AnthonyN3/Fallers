@@ -7,7 +7,14 @@ using BeardedManStudios.Forge.Networking.Unity;
 
 public class NetworkingPlayer : NetworkedPlayerBehavior
 {
+    public Transform orientationTransform;
+
     public Transform playerTransform;
+    public GunSystem currentGun;
+    public Transform gunContainer;
+    public Transform clientViewGunContainer;
+
+    private Vector3 spawnPos;
 
     protected override void NetworkStart()
     {
@@ -28,11 +35,6 @@ public class NetworkingPlayer : NetworkedPlayerBehavior
 
         playerTransform.GetComponent<Rigidbody>().isKinematic = true;
         StartCoroutine(PickTeam());
-
-        var guns = FindObjectsOfType<GunSystem>();
-        foreach(var gun in guns) {
-            gun.SetPlayer(this);
-        }
     }
 
     IEnumerator PickTeam()
@@ -49,8 +51,11 @@ public class NetworkingPlayer : NetworkedPlayerBehavior
         Debug.Log("Setting your team to " + networkObject.team);
 
         networkObject.SendRpc(RPC_SET_TEAM, Receivers.AllBuffered,  networkObject.Owner.NetworkId, networkObject.team);
+        networkObject.SendRpc(RPC_SET_GUN, Receivers.AllBuffered, 0);
 
         playerTransform.GetComponent<Rigidbody>().isKinematic = false;
+
+        spawnPos = transform.position;
     }
 
     public override void SetTeam(RpcArgs args)
@@ -62,6 +67,95 @@ public class NetworkingPlayer : NetworkedPlayerBehavior
         
         LobbyManager.Instance.AddNewPlayer(team, this);
         playerTransform.GetComponent<Renderer>().material.color = team == 'R' ? Color.red : Color.blue;
+    }
+
+    public void PickupGun(int gunid)
+    {
+        networkObject.SendRpc(RPC_SET_GUN, Receivers.AllBuffered, gunid);
+    }
+
+    public override void SetGun(RpcArgs args)
+    {
+        int gunIndex = args.GetNext<int>();
+
+        if(currentGun != null) {
+            Destroy(currentGun.GetClientViewWeapon());
+            Destroy(currentGun.gameObject);
+        }
+
+        var weaponGO = WeaponManager.Instance.weapons[gunIndex];
+        var weaponInstance = Instantiate(weaponGO);
+        var clientWeaponInstance = Instantiate(weaponGO);
+        Destroy(clientWeaponInstance.GetComponent<Rigidbody>());
+        
+        weaponInstance.transform.SetParent(gunContainer);
+        weaponInstance.transform.localPosition = Vector3.zero;
+        weaponInstance.transform.localRotation = Quaternion.identity;
+
+        clientWeaponInstance.transform.SetParent(clientViewGunContainer);
+        clientWeaponInstance.transform.localPosition = Vector3.zero;
+        clientWeaponInstance.transform.localRotation = Quaternion.identity;
+        clientWeaponInstance.GetComponent<GunSystem>().enabled = false;
+        
+        currentGun = weaponInstance.GetComponent<GunSystem>();
+        currentGun.SetPlayer(this);
+        currentGun.SetClientViewWeapon(clientWeaponInstance);
+
+        if(networkObject.IsOwner)
+        {
+            currentGun.SetCamera(Camera.main);
+            clientWeaponInstance.SetActive(false);
+        }
+    }
+
+    public void DoShoot(Vector3 hitPoint, Vector3 hitNormal)
+    {
+        networkObject.SendRpc(RPC_SHOOT_GUN, Receivers.Others, hitPoint, hitNormal);
+    }
+
+    public override void ShootGun(RpcArgs args)
+    {
+        Vector3 hitPoint = args.GetNext<Vector3>();
+        Vector3 hitNormal = args.GetNext<Vector3>();
+
+        currentGun.spawnBulletHole(hitPoint, hitNormal);
+        currentGun.muzzleFlash.Play();
+        currentGun.muzzleFlash2.Play();
+    }
+
+    public void ApplyDamage(string targetName, float damage)
+    {
+        networkObject.SendRpc(RPC_DO_DAMAGE, Receivers.AllBuffered, targetName, damage);
+    }
+
+    public override void DoDamage(RpcArgs args)
+    {
+        string targetName = args.GetNext<string>();
+        float damage = args.GetNext<float>();
+
+        Debug.Log("Player " + networkObject.Owner.NetworkId + " damaged " + targetName + " for " + damage);
+
+        var target = GameObject.Find(targetName);
+        if(target != null) {
+            target.GetComponentInChildren<PlayerManager>().ApplyDamage(damage);
+        }
+    }
+
+    public void Die() 
+    {
+        if(networkObject == null) {
+            Debug.Log("Network object is null");
+            return;
+        }
+
+        if(networkObject.IsOwner) {
+            Debug.Log("Player " + networkObject.Owner.NetworkId + " died");
+            if(networkObject.team == 'R') {
+                playerTransform.position = LobbyManager.Instance.RedSpawn.position;
+            } else {
+                playerTransform.position = LobbyManager.Instance.BlueSpawn.position;
+            }
+        }
     }
 
     private void Update() 
@@ -76,11 +170,11 @@ public class NetworkingPlayer : NetworkedPlayerBehavior
 
         if(!networkObject.IsOwner) {
             playerTransform.position = networkObject.pos;
-            playerTransform.rotation = networkObject.rot;
+            orientationTransform.rotation = networkObject.rot;
             return;
         }
 
         networkObject.pos = playerTransform.position;
-        networkObject.rot = playerTransform.rotation;
+        networkObject.rot = orientationTransform.rotation;
     }
 }

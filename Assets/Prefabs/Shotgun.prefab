@@ -173,13 +173,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ba58521ed5d16974193d73b5ff5fef90, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  damage: 20
+  damage: 15
   timeBetweenShooting: 1
   spread: 0.06
   range: 100
   reloadTime: 2
   timeBetweenShots: 0
   magazineSize: 24
+  reservedAmmoMax: 96
+  reservedAmmoCur: 96
   bulletsPerTap: 6
   allowButtonHold: 1
   cam: {fileID: 0}
@@ -192,6 +194,7 @@ MonoBehaviour:
   camShakeDuration: 0.1
   bulletHoles: {fileID: 1000010844420130, guid: 4edabb1c0dde62743b137378c7d22980, type: 3}
   muzzleFlash: {fileID: 3649158042378460014}
+  muzzleFlash2: {fileID: 0}
   ammoText: {fileID: 0}
 --- !u!54 &3466371011725879868
 Rigidbody:

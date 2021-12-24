@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class PickUpController : MonoBehaviour
 {
+    public NetworkingPlayer player;
     public Camera cam;
 
     public RaycastHit rayHit;
@@ -12,26 +13,25 @@ public class PickUpController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(Input.GetKeyDown(KeyCode.E))
+        if (Physics.Raycast(cam.transform.position, cam.transform.forward, out rayHit, 4.5f, WhatIsWeapon))
         {
-            if (Physics.Raycast(cam.transform.position, cam.transform.forward, out rayHit, 4.5f, WhatIsWeapon))
+            if(Input.GetKeyDown(KeyCode.E))
             {
-                dropWeapon();   // drop weapon if one is currently held
-                Transform weaponTr = rayHit.transform;
+                GameObject weaponGo = rayHit.transform.gameObject;
 
-                weaponTr.GetComponent<Rigidbody>().isKinematic = true;
-
-                weaponTr.SetParent(transform);
-                weaponTr.localPosition = Vector3.zero;
-                weaponTr.localRotation = Quaternion.Euler(Vector3.zero);
-                weaponTr.localScale = Vector3.one;
-                
-                weaponTr.GetComponent<GunSystem>().enabled = true;
+                if(weaponGo.GetComponent<GunSystem>() != null)
+                {
+                    GunSystem weapon = weaponGo.GetComponent<GunSystem>();
+                    for(var i = 0; i < WeaponManager.Instance.weapons.Length; i++) 
+                    {
+                        if(weapon.name == WeaponManager.Instance.weapons[i].name)
+                        {
+                            player.PickupGun(i);
+                        }
+                    }
+                }
             }
         }
-
-        if(Input.GetKeyDown(KeyCode.Q))
-            dropWeapon();
     }
 
     private void dropWeapon()
