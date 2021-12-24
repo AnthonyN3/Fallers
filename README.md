@@ -16,15 +16,15 @@
 - [Sebastian Maj](https://github.com/SebastianMaj) (Note: ``KerryuCC`` is also Sebastian)
 
 ## Controls:
-``W`` - ``Move Up``
-``A`` - ``Move Left``
-``S`` - ``Move Back``
-``D`` - ``Move Right``
-``SPACE`` - ``Jump``
-``CTRL`` - ``Crouch/Slide``
-``SHIFT`` - ``Walk``
-``MOUSE1`` - ``Shoot``
-``E`` - ``PickUp``
+- ``W`` - ``Move Up``
+- ``A`` - ``Move Left``
+- ``S`` - ``Move Back``
+- ``D`` - ``Move Right``
+- ``SPACE`` - ``Jump``
+- ``CTRL`` - ``Crouch/Slide``
+- ``SHIFT`` - ``Walk``
+- ``MOUSE1`` - ``Shoot``
+- ``E`` - ``PickUp``
 
 ## Video Demo
 https://youtu.be/mx9I1ZhM7YQ
