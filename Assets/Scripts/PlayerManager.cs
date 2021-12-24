@@ -21,7 +21,12 @@ public class PlayerManager : MonoBehaviour
     private void Update() 
     {
         if(!player.networkObject.IsOwner) return;
-
+        if(transform.position.y < -10)
+        { 
+            gameObject.GetComponent<Rigidbody>().velocity = Vector3.zero;
+            gameObject.GetComponent<Rigidbody>().angularVelocity = Vector3.zero;
+            player.Die();
+        }
         healthText.SetText(curHealth.ToString());
     }
 
