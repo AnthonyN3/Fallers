@@ -13608,7 +13608,7 @@ GameObject:
   - component: {fileID: 448091481}
   - component: {fileID: 448091480}
   m_Layer: 8
-  m_Name: Rifle (1)
+  m_Name: Rifle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -14908,7 +14908,7 @@ GameObject:
   - component: {fileID: 494233134}
   - component: {fileID: 494233133}
   m_Layer: 8
-  m_Name: MachineGun (1)
+  m_Name: MachineGun
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -15349,7 +15349,7 @@ GameObject:
   - component: {fileID: 536161704}
   - component: {fileID: 536161703}
   m_Layer: 8
-  m_Name: BurstRifle (1)
+  m_Name: BurstRifle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -34571,7 +34571,7 @@ GameObject:
   - component: {fileID: 717964514}
   - component: {fileID: 717964513}
   m_Layer: 8
-  m_Name: Shotgun (1)
+  m_Name: Shotgun
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
