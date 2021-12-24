@@ -6,6 +6,8 @@ public class FallingObj : MonoBehaviour
 {
     private System.Random rand;
     public GameObject objectToDrop;
+    public GameObject redRagdoll;
+    public GameObject blueRagdoll;
 
 
     void Awake()
@@ -16,12 +18,25 @@ public class FallingObj : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        InvokeRepeating("Drop", 0.5f, 1.5f);
+        InvokeRepeating("DropBox", 0.25f, 1.5f);
+        InvokeRepeating("DropRed", 0.75f, 2f);
+        InvokeRepeating("DropBlue", 1.0f, 2f);
     }
 
-    private void Drop()
+    private void DropBox()
     {
-        Instantiate(objectToDrop, new Vector3(rand.Next(0, 10),rand.Next(10,20), rand.Next(-24,-18)), Quaternion.identity);
+        Instantiate(objectToDrop, new Vector3(rand.Next(0, 10),rand.Next(10,20), rand.Next(-24,-18)), Random.rotation);
     }
+
+    private void DropRed()
+    {
+        Instantiate(redRagdoll, new Vector3(rand.Next(0, 10),rand.Next(10,20), rand.Next(-24,-18)), Random.rotation);
+    }
+
+    private void DropBlue()
+    {
+        Instantiate(blueRagdoll, new Vector3(rand.Next(0, 10),rand.Next(10,20), rand.Next(-24,-18)), Random.rotation);
+    }
+
 
 }
