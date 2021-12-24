@@ -4,6 +4,8 @@ using TMPro;
 
 public class GunSystem : MonoBehaviour
 {
+    private NetworkingPlayer player;
+
     //public bool enableWeapon;
     public int damage;
     public float timeBetweenShooting, spread, range, reloadTime, timeBetweenShots;
@@ -29,9 +31,13 @@ public class GunSystem : MonoBehaviour
 
     // UI & Text
     public TextMeshProUGUI ammoText;
+    private bool setup = false;
 
-    private void Awake()
-    {
+    public void SetPlayer(NetworkingPlayer player) {
+        this.player = player;
+
+        ammoText = GameObject.Find("ammo_text").GetComponent<TextMeshProUGUI>();
+
         bulletsLeft = magazineSize;
         readyToShoot = true;
 
@@ -47,10 +53,21 @@ public class GunSystem : MonoBehaviour
             gameObject.GetComponent<Rigidbody>().isKinematic = false;
             GetComponent<GunSystem>().enabled = false;
         }
+
+        setup = true;
     }
 
     private void Update()
     {
+        if(!setup) {
+            return;
+        }
+
+        if(!player.networkObject.IsOwner)
+        {
+            return;
+        }
+
         //if (enableWeapon)
         MyInput();
         ammoText.SetText(bulletsLeft + " / " + magazineSize);
@@ -58,6 +75,11 @@ public class GunSystem : MonoBehaviour
 
     private void MyInput()
     {
+        if(!player.networkObject.IsOwner)
+        {
+            return;
+        }
+
         shooting = allowButtonHold ? (Input.GetKey(KeyCode.Mouse0)) : (Input.GetKeyDown(KeyCode.Mouse0));
 
         if (Input.GetKeyDown(KeyCode.R) && bulletsLeft < magazineSize && !reloading)
@@ -72,6 +94,11 @@ public class GunSystem : MonoBehaviour
 
     private void Shoot()
     {
+        if(!player.networkObject.IsOwner)
+        {
+            return;
+        }
+
         readyToShoot = false;
 
         //Spread
@@ -111,17 +138,32 @@ public class GunSystem : MonoBehaviour
 
     private void ResetShot()
     {
+        if(!player.networkObject.IsOwner)
+        {
+            return;
+        }
+
         readyToShoot = true;
     }
 
     private void Reload()
     {
+        if(!player.networkObject.IsOwner)
+        {
+            return;
+        }
+
         reloading = true;
         StartCoroutine(ReloadAnimation(reloadTime));
     }
 
     private IEnumerator ReloadAnimation(float duration)
     {
+        if(!player.networkObject.IsOwner)
+        {
+            yield break;
+        }
+
         Vector3 startRotation = transform.localEulerAngles;
         float endRotation = startRotation.x - 360.0f;
         float elapsed = 0.0f;
