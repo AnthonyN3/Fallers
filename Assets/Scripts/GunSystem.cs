@@ -6,6 +6,8 @@ public class GunSystem : MonoBehaviour
 {
     private NetworkingPlayer player;
 
+    private GameObject clientViewWeapon;
+
     //public bool enableWeapon;
     public int damage;
     public float timeBetweenShooting, spread, range, reloadTime, timeBetweenShots;
@@ -28,6 +30,7 @@ public class GunSystem : MonoBehaviour
     // MuzzleFlash and BulletHoles
     public GameObject bulletHoles;
     public ParticleSystem muzzleFlash;
+    public ParticleSystem muzzleFlash2;
 
     // UI & Text
     public TextMeshProUGUI ammoText;
@@ -55,6 +58,16 @@ public class GunSystem : MonoBehaviour
         }
 
         setup = true;
+    }
+
+    public void SetCamera(Camera cam) {
+        this.cam = cam;
+        camShake = cam.gameObject.GetComponent<CameraShake>();
+    }
+
+    public void SetClientViewWeapon(GameObject clientViewWeapon) {
+        this.clientViewWeapon = clientViewWeapon;
+        this.muzzleFlash2 = clientViewWeapon.transform.Find("MuzzleFlashEffect").GetComponent<ParticleSystem>();
     }
 
     private void Update()
@@ -114,7 +127,10 @@ public class GunSystem : MonoBehaviour
         if (Physics.Raycast(cam.transform.position, direction, out rayHit, range, WhatIsEnemy))
         {
             //Debug.Log(rayHit.collider.name);
-            // if(rayHit.collider.CompareTag("Player"))
+            if(rayHit.collider.CompareTag("Player"))
+            {
+                //TODO: Pull player from lobby mananger and check teams here
+            }
         }
 
         bulletsLeft--;
@@ -128,12 +144,19 @@ public class GunSystem : MonoBehaviour
         // Bullet Hole and Muzzle Flash
         //GameObject particleObject = Instantiate(muzzleFlash, attackPoint.position, Quaternion.identity);
         muzzleFlash.Play();
-        Instantiate(bulletHoles, rayHit.point, Quaternion.LookRotation(rayHit.normal));  //Quaternion.Euler(0,180,0));
+        spawnBulletHole(rayHit.point, rayHit.normal);
 
         //Destroy(particleObject, 0.25f);
 
         if (bulletsShot > 0 && bulletsLeft > 0) // this would only be useful for the burst weapons
             Invoke("Shoot", timeBetweenShots);
+
+        player.DoShoot(rayHit.point, rayHit.normal);
+    }
+
+    public void spawnBulletHole(Vector3 pos, Vector3 normal)
+    {
+        Instantiate(bulletHoles, pos, Quaternion.LookRotation(normal));
     }
 
     private void ResetShot()

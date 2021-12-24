@@ -7,7 +7,12 @@ using BeardedManStudios.Forge.Networking.Unity;
 
 public class NetworkingPlayer : NetworkedPlayerBehavior
 {
+    public Transform orientationTransform;
+
     public Transform playerTransform;
+    public GunSystem currentGun;
+    public Transform gunContainer;
+    public Transform clientViewGunContainer;
 
     protected override void NetworkStart()
     {
@@ -28,11 +33,6 @@ public class NetworkingPlayer : NetworkedPlayerBehavior
 
         playerTransform.GetComponent<Rigidbody>().isKinematic = true;
         StartCoroutine(PickTeam());
-
-        var guns = FindObjectsOfType<GunSystem>();
-        foreach(var gun in guns) {
-            gun.SetPlayer(this);
-        }
     }
 
     IEnumerator PickTeam()
@@ -49,6 +49,7 @@ public class NetworkingPlayer : NetworkedPlayerBehavior
         Debug.Log("Setting your team to " + networkObject.team);
 
         networkObject.SendRpc(RPC_SET_TEAM, Receivers.AllBuffered,  networkObject.Owner.NetworkId, networkObject.team);
+        networkObject.SendRpc(RPC_SET_GUN, Receivers.AllBuffered, 0);
 
         playerTransform.GetComponent<Rigidbody>().isKinematic = false;
     }
@@ -64,6 +65,50 @@ public class NetworkingPlayer : NetworkedPlayerBehavior
         playerTransform.GetComponent<Renderer>().material.color = team == 'R' ? Color.red : Color.blue;
     }
 
+    public override void SetGun(RpcArgs args)
+    {
+        int gunIndex = args.GetNext<int>();
+
+        var weaponGO = WeaponManager.Instance.weapons[gunIndex];
+        var weaponInstance = Instantiate(weaponGO);
+        var clientWeaponInstance = Instantiate(weaponGO);
+        Destroy(clientWeaponInstance.GetComponent<Rigidbody>());
+        
+        weaponInstance.transform.SetParent(gunContainer);
+        weaponInstance.transform.localPosition = Vector3.zero;
+        weaponInstance.transform.localRotation = Quaternion.identity;
+
+        clientWeaponInstance.transform.SetParent(clientViewGunContainer);
+        clientWeaponInstance.transform.localPosition = Vector3.zero;
+        clientWeaponInstance.transform.localRotation = Quaternion.identity;
+        clientWeaponInstance.GetComponent<GunSystem>().enabled = false;
+        
+        currentGun = weaponInstance.GetComponent<GunSystem>();
+        currentGun.SetPlayer(this);
+        currentGun.SetClientViewWeapon(clientWeaponInstance);
+
+        if(networkObject.IsOwner)
+        {
+            currentGun.SetCamera(Camera.main);
+            clientWeaponInstance.SetActive(false);
+        }
+    }
+
+    public void DoShoot(Vector3 hitPoint, Vector3 hitNormal)
+    {
+        networkObject.SendRpc(RPC_SHOOT_GUN, Receivers.Others, hitPoint, hitNormal);
+    }
+
+    public override void ShootGun(RpcArgs args)
+    {
+        Vector3 hitPoint = args.GetNext<Vector3>();
+        Vector3 hitNormal = args.GetNext<Vector3>();
+
+        currentGun.spawnBulletHole(hitPoint, hitNormal);
+        currentGun.muzzleFlash.Play();
+        currentGun.muzzleFlash2.Play();
+    }
+
     private void Update() 
     {
         if(networkObject == null || playerTransform == null) {
@@ -76,11 +121,11 @@ public class NetworkingPlayer : NetworkedPlayerBehavior
 
         if(!networkObject.IsOwner) {
             playerTransform.position = networkObject.pos;
-            playerTransform.rotation = networkObject.rot;
+            orientationTransform.rotation = networkObject.rot;
             return;
         }
 
         networkObject.pos = playerTransform.position;
-        networkObject.rot = playerTransform.rotation;
+        networkObject.rot = orientationTransform.rotation;
     }
 }
