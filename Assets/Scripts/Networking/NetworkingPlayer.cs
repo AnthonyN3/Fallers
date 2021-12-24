@@ -19,6 +19,9 @@ public class NetworkingPlayer : NetworkedPlayerBehavior
 
     private Vector3 spawnPos;
 
+    public GameObject model;
+    public Animator animator;
+
     protected override void NetworkStart()
     {
         base.NetworkStart();
@@ -38,6 +41,43 @@ public class NetworkingPlayer : NetworkedPlayerBehavior
 
         playerTransform.GetComponent<Rigidbody>().isKinematic = true;
         StartCoroutine(PickTeam());
+    }
+
+    private void Update() 
+    {
+        if(networkObject == null || playerTransform == null) {
+            return;
+        }    
+
+        if(gameObject.name != networkObject.name.ToString()) {
+            gameObject.name = networkObject.name.ToString();
+        }
+
+        animator.SetFloat("walking", networkObject.walking);
+
+        if(!networkObject.IsOwner) {
+            playerTransform.position = networkObject.pos;
+            orientationTransform.rotation = networkObject.rot;
+            return;
+        }
+
+        networkObject.pos = playerTransform.position;
+        networkObject.rot = orientationTransform.rotation;
+        networkObject.walking = Input.GetAxis("Vertical") + Input.GetAxis("Horizontal");
+    }
+
+    public void DoJump()
+    {
+        if(!networkObject.IsOwner) {
+            return;
+        }
+
+        networkObject.SendRpc(RPC_JUMP, Receivers.All);
+    }
+
+    public override void Jump(RpcArgs args)
+    {
+        animator.SetTrigger("jump");
     }
 
     IEnumerator PickTeam()
@@ -69,7 +109,7 @@ public class NetworkingPlayer : NetworkedPlayerBehavior
         Debug.Log("Adding player " + playerId + " to team " + team);
         
         LobbyManager.Instance.AddNewPlayer(team, this);
-        playerTransform.GetComponent<Renderer>().material.color = team == 'R' ? Color.red : Color.blue;
+        model.GetComponent<SkinnedMeshRenderer>().material.color = team == 'R' ? Color.red : Color.blue;
     }
 
     public void PickupGun(int gunid)
@@ -277,25 +317,5 @@ public class NetworkingPlayer : NetworkedPlayerBehavior
         }
 
         GameObject.Find(playerName).GetComponentInChildren<PlayerManager>().DroppedFlag();
-    }
-
-    private void Update() 
-    {
-        if(networkObject == null || playerTransform == null) {
-            return;
-        }    
-
-        if(gameObject.name != networkObject.name.ToString()) {
-            gameObject.name = networkObject.name.ToString();
-        }
-
-        if(!networkObject.IsOwner) {
-            playerTransform.position = networkObject.pos;
-            orientationTransform.rotation = networkObject.rot;
-            return;
-        }
-
-        networkObject.pos = playerTransform.position;
-        networkObject.rot = orientationTransform.rotation;
     }
 }

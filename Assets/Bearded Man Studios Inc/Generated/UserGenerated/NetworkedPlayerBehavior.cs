@@ -4,8 +4,8 @@ using UnityEngine;
 
 namespace BeardedManStudios.Forge.Networking.Generated
 {
-	[GeneratedRPC("{\"types\":[[\"uint\", \"char\"][\"int\"][\"Vector3\", \"Vector3\"][\"string\", \"float\"][\"char\", \"string\"][\"char\", \"string\", \"Vector3\"][\"char\", \"string\"][\"char\"]]")]
-	[GeneratedRPCVariableNames("{\"types\":[[\"playerId\", \"team\"][\"gunIndex\"][\"hitpoint\", \"hitnormal\"][\"targetName\", \"damage\"][\"flagteam\", \"player\"][\"flagteam\", \"player\", \"newPos\"][\"team\", \"player\"][\"team\"]]")]
+	[GeneratedRPC("{\"types\":[[\"uint\", \"char\"][\"int\"][\"Vector3\", \"Vector3\"][\"string\", \"float\"][\"char\", \"string\"][\"char\", \"string\", \"Vector3\"][\"char\", \"string\"][\"char\"][]]")]
+	[GeneratedRPCVariableNames("{\"types\":[[\"playerId\", \"team\"][\"gunIndex\"][\"hitpoint\", \"hitnormal\"][\"targetName\", \"damage\"][\"flagteam\", \"player\"][\"flagteam\", \"player\", \"newPos\"][\"team\", \"player\"][\"team\"][]]")]
 	public abstract partial class NetworkedPlayerBehavior : NetworkBehavior
 	{
 		public const byte RPC_SET_TEAM = 0 + 5;
@@ -16,6 +16,7 @@ namespace BeardedManStudios.Forge.Networking.Generated
 		public const byte RPC_DROP_FLAG = 5 + 5;
 		public const byte RPC_TEAM_SCORE = 6 + 5;
 		public const byte RPC_RESPAWN_FLAG = 7 + 5;
+		public const byte RPC_JUMP = 8 + 5;
 		
 		public NetworkedPlayerNetworkObject networkObject = null;
 
@@ -37,6 +38,7 @@ namespace BeardedManStudios.Forge.Networking.Generated
 			networkObject.RegisterRpc("DropFlag", DropFlag, typeof(char), typeof(string), typeof(Vector3));
 			networkObject.RegisterRpc("TeamScore", TeamScore, typeof(char), typeof(string));
 			networkObject.RegisterRpc("RespawnFlag", RespawnFlag, typeof(char));
+			networkObject.RegisterRpc("Jump", Jump);
 
 			networkObject.onDestroy += DestroyGameObject;
 
@@ -160,6 +162,10 @@ namespace BeardedManStudios.Forge.Networking.Generated
 		/// char team
 		/// </summary>
 		public abstract void RespawnFlag(RpcArgs args);
+		/// <summary>
+		/// Arguments:
+		/// </summary>
+		public abstract void Jump(RpcArgs args);
 
 		// DO NOT TOUCH, THIS GETS GENERATED PLEASE EXTEND THIS CLASS IF YOU WISH TO HAVE CUSTOM CODE ADDITIONS
 	}

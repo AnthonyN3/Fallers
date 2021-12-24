@@ -2,7 +2,8 @@ using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
-    // Dani's physic movement template
+    public NetworkingPlayer player;
+
     //Assingables
     public Transform playerCam;
     public Transform orientation;
@@ -184,6 +185,8 @@ public class PlayerMovement : MonoBehaviour
         if (grounded && readyToJump)
         {
             readyToJump = false;
+
+            player.DoJump();
 
             //Add jump forces
             rb.AddForce(Vector2.up * jumpForce * 1.5f);
