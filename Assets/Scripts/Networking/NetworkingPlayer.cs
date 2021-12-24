@@ -14,6 +14,9 @@ public class NetworkingPlayer : NetworkedPlayerBehavior
     public Transform gunContainer;
     public Transform clientViewGunContainer;
 
+    public GameObject redflag;
+    public GameObject blueflag;
+
     private Vector3 spawnPos;
 
     protected override void NetworkStart()
@@ -156,6 +159,124 @@ public class NetworkingPlayer : NetworkedPlayerBehavior
                 playerTransform.position = LobbyManager.Instance.BlueSpawn.position;
             }
         }
+    }
+
+    public void PickedFlag()
+    {
+        char team = networkObject.team;
+        string playerName = gameObject.name;
+
+        networkObject.SendRpc(RPC_PICKUP_FLAG, Receivers.AllBuffered, team, playerName);
+    }
+
+    public void DroppedFlag()
+    {
+        char team = networkObject.team;
+        string playerName = gameObject.name;
+        Vector3 newPos = playerTransform.position;
+
+        networkObject.SendRpc(RPC_DROP_FLAG, Receivers.AllBuffered, team, playerName, newPos);
+    }
+
+    public void RespawnedFlag()
+    {
+        char team = networkObject.team;
+
+        networkObject.SendRpc(RPC_RESPAWN_FLAG, Receivers.AllBuffered, team);
+    }
+
+    public void Scored()
+    {
+        char team = networkObject.team;
+        string playerName = gameObject.name;
+
+        GameObject.Find(playerName).GetComponentInChildren<PlayerManager>().DroppedFlag();
+
+        networkObject.SendRpc(RPC_TEAM_SCORE, Receivers.AllBuffered, team, playerName);
+    }
+
+    public override void PickupFlag(RpcArgs args)
+    {
+        char team = args.GetNext<char>();
+        string playerName = args.GetNext<string>();
+
+        Debug.Log("Player " + playerName + " picked up the flag for team " + team);
+        if(team == 'R')
+        {
+            LobbyManager.Instance.BlueFlag.SetActive(false);
+            GameObject.Find(playerName).GetComponent<NetworkingPlayer>().blueflag.SetActive(true);
+        } 
+        else 
+        {
+            LobbyManager.Instance.RedFlag.SetActive(false);
+            GameObject.Find(playerName).GetComponent<NetworkingPlayer>().redflag.SetActive(true);
+        }
+
+        GameObject.Find(playerName).GetComponentInChildren<PlayerManager>().CarryingFlag();
+    }
+
+    public override void DropFlag(RpcArgs args)
+    {
+        char team = args.GetNext<char>();
+        string playerName = args.GetNext<string>();
+        Vector3 newPos = args.GetNext<Vector3>();
+
+        Debug.Log("Player " + playerName + " respawned the flag for team " + team);
+        if(team == 'R')
+        {
+            LobbyManager.Instance.BlueFlag.SetActive(true);
+            LobbyManager.Instance.BlueFlag.transform.position = newPos;
+            GameObject.Find(playerName).GetComponent<NetworkingPlayer>().blueflag.SetActive(false);
+        }
+        else 
+        {
+            LobbyManager.Instance.RedFlag.SetActive(true);
+            LobbyManager.Instance.RedFlag.transform.position = newPos;
+            GameObject.Find(playerName).GetComponent<NetworkingPlayer>().redflag.SetActive(false);
+        }
+
+        GameObject.Find(playerName).GetComponentInChildren<PlayerManager>().DroppedFlag();
+    }
+
+    public override void RespawnFlag(RpcArgs args)
+    {
+        char team = args.GetNext<char>();
+
+        Debug.Log("Flag respawned for team " + team);
+        if(team == 'R')
+        {
+            LobbyManager.Instance.RedFlag.SetActive(true);
+            LobbyManager.Instance.RedFlag.transform.position = GameObject.Find("Red_Flag_Spawn").transform.position;
+        }
+        else 
+        {
+            LobbyManager.Instance.BlueFlag.SetActive(true);
+            LobbyManager.Instance.BlueFlag.transform.position = GameObject.Find("Blue_Flag_Spawn").transform.position;
+        }
+    }
+
+    public override void TeamScore(RpcArgs args)
+    {
+        char team = args.GetNext<char>();
+        string playerName = args.GetNext<string>();
+
+        Debug.Log("Team " + team + " scored");
+        if(team == 'R')
+        {
+            LobbyManager.Instance.BlueFlag.SetActive(true);
+            LobbyManager.Instance.BlueFlag.transform.position = GameObject.Find("Blue_Flag_Spawn").transform.position;
+            GameObject.Find(playerName).GetComponent<NetworkingPlayer>().blueflag.SetActive(false);
+            LobbyManager.Instance.RedScored();
+        }
+        else
+        {
+            LobbyManager.Instance.RedFlag.SetActive(true);
+            LobbyManager.Instance.RedFlag.transform.position = GameObject.Find("Red_Flag_Spawn").transform.position;
+            GameObject.Find(playerName).GetComponent<NetworkingPlayer>().redflag.SetActive(false);
+            LobbyManager.Instance.BlueScored();
+        }
+
+        GameObject.Find(playerName).GetComponentInChildren<PlayerManager>().DroppedFlag();
     }
 
     private void Update() 
