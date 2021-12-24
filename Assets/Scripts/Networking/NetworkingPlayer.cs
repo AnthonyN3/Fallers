@@ -144,14 +144,16 @@ public class NetworkingPlayer : NetworkedPlayerBehavior
     public void Die() 
     {
         if(networkObject == null) {
+            Debug.Log("Network object is null");
             return;
         }
 
         if(networkObject.IsOwner) {
+            Debug.Log("Player " + networkObject.Owner.NetworkId + " died");
             if(networkObject.team == 'R') {
-                transform.position = LobbyManager.Instance.RedSpawn.position;
+                playerTransform.position = LobbyManager.Instance.RedSpawn.position;
             } else {
-                transform.position = LobbyManager.Instance.BlueSpawn.position;
+                playerTransform.position = LobbyManager.Instance.BlueSpawn.position;
             }
         }
     }

@@ -408,8 +408,6 @@ MonoBehaviour:
   player: {fileID: 5892620848935690673}
   maxHealth: 100
   curHealth: 0
-  healthText: {fileID: 0}
-  weaponContainer: {fileID: 0}
 --- !u!1 &5386941102297631559
 GameObject:
   m_ObjectHideFlags: 0
@@ -565,6 +563,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e390ccec22527df498e2502cbeb3416e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  player: {fileID: 5892620848935690673}
   cam: {fileID: 5386941101890257674}
   WhatIsWeapon:
     serializedVersion: 2

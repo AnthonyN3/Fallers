@@ -20,6 +20,8 @@ public class PlayerManager : MonoBehaviour
 
     private void Update() 
     {
+        if(!player.networkObject.IsOwner) return;
+
         healthText.SetText(curHealth.ToString());
     }
 
