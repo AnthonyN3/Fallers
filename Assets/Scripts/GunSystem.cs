@@ -11,7 +11,7 @@ public class GunSystem : MonoBehaviour
     //public bool enableWeapon;
     public int damage;
     public float timeBetweenShooting, spread, range, reloadTime, timeBetweenShots;
-    public int magazineSize, bulletsPerTap;
+    public int magazineSize, reservedAmmoMax, reservedAmmoCur,bulletsPerTap;
     public bool allowButtonHold;
     int bulletsLeft, bulletsShot;
 
@@ -43,6 +43,7 @@ public class GunSystem : MonoBehaviour
 
         bulletsLeft = magazineSize;
         readyToShoot = true;
+        reservedAmmoCur = reservedAmmoMax;
 
         if (transform.parent != null && transform.parent.name.Equals("WeaponContainer"))
         { 
@@ -83,7 +84,7 @@ public class GunSystem : MonoBehaviour
 
         //if (enableWeapon)
         MyInput();
-        ammoText.SetText(bulletsLeft + " / " + magazineSize);
+        ammoText.SetText(bulletsLeft + " / " + reservedAmmoCur);
     }
 
     private void MyInput()
@@ -95,7 +96,7 @@ public class GunSystem : MonoBehaviour
 
         shooting = allowButtonHold ? (Input.GetKey(KeyCode.Mouse0)) : (Input.GetKeyDown(KeyCode.Mouse0));
 
-        if (Input.GetKeyDown(KeyCode.R) && bulletsLeft < magazineSize && !reloading)
+        if (Input.GetKeyDown(KeyCode.R) && bulletsLeft < magazineSize && !reloading && reservedAmmoCur > 0)
             Reload();
 
         if (readyToShoot && shooting && !reloading && bulletsLeft > 0)
@@ -148,7 +149,7 @@ public class GunSystem : MonoBehaviour
 
         //Destroy(particleObject, 0.25f);
 
-        if (bulletsShot > 0 && bulletsLeft > 0) // this would only be useful for the burst weapons
+        if (bulletsShot > 0 && bulletsLeft > 0) // this would only be useful for the burst/shotgun weapons
             Invoke("Shoot", timeBetweenShots);
 
         player.DoShoot(rayHit.point, rayHit.normal);
@@ -200,7 +201,15 @@ public class GunSystem : MonoBehaviour
             yield return null;
         }
 
-        bulletsLeft = magazineSize;
+        int bulletsReloaded = magazineSize - bulletsLeft;
+        if(reservedAmmoCur >= bulletsReloaded)
+        {
+            bulletsLeft += bulletsReloaded;
+            reservedAmmoCur -= bulletsReloaded;
+        } else {
+            bulletsLeft += reservedAmmoCur;
+            reservedAmmoCur = 0;
+        }
         reloading = false;
     }
 
