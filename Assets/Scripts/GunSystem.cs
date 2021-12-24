@@ -107,6 +107,11 @@ public class GunSystem : MonoBehaviour
         {
             bulletsShot = bulletsPerTap;
             Shoot();
+        } 
+        
+        if (Input.GetMouseButtonDown(0) && bulletsLeft <= 0)
+        {
+            player.DoSound(2, transform.position);
         }
     }
 
@@ -141,6 +146,7 @@ public class GunSystem : MonoBehaviour
                     if(hitTeam != LobbyManager.Instance.GetTeam(player.networkObject.Owner))
                     {
                         player.ApplyDamage(networkedPlayer.gameObject.name, damage);
+                        AudioSource.PlayClipAtPoint(SoundManager.instance.sounds[3], transform.position);
                     }
                 }
             }
@@ -156,8 +162,10 @@ public class GunSystem : MonoBehaviour
 
         // Bullet Hole and Muzzle Flash
         //GameObject particleObject = Instantiate(muzzleFlash, attackPoint.position, Quaternion.identity);
+        player.DoSound(0, muzzleFlash.transform.position);
         muzzleFlash.Play();
         spawnBulletHole(rayHit.point, rayHit.normal);
+        player.DoSound(1, rayHit.point);
 
         //Destroy(particleObject, 0.25f);
 

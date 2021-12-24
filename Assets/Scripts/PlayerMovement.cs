@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -99,6 +100,16 @@ public class PlayerMovement : MonoBehaviour
         jumping = Input.GetButton("Jump");
         crouching = Input.GetKey(KeyCode.LeftControl);
 
+        if(rb.velocity.magnitude > 0 && grounded) {
+            if(!footstepsPlaying) {
+                footstepsPlaying = true;
+                StartCoroutine(PlayFootsteps());
+            }
+        } else {
+            footstepsPlaying = false;
+            StopCoroutine(PlayFootsteps());
+        }
+
         //Crouching
         if (Input.GetKeyDown(KeyCode.LeftControl))
             StartCrouch();
@@ -110,6 +121,18 @@ public class PlayerMovement : MonoBehaviour
             maxSpeed = 2.5f;
         if (Input.GetKeyUp(KeyCode.LeftShift))
             maxSpeed = maxSpeedFixed;
+
+        Debug.Log(rb.velocity.magnitude);
+    }
+
+    private bool footstepsPlaying = false;
+    private IEnumerator PlayFootsteps()
+    {
+        while(footstepsPlaying) {
+            player.DoSound(Random.Range(5,7), transform.position);
+            yield return new WaitForSeconds(1-(rb.velocity.magnitude/30));
+        }
+        yield return null;
     }
 
     private void StartCrouch()

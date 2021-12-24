@@ -38,7 +38,13 @@ public class PlayerManager : MonoBehaviour
         if(curHealth <= 0) 
         {
             curHealth = 0;
-            player.DroppedFlag();
+            
+            if(carryingFlag) 
+            {
+                carryingFlag = false;
+                player.DroppedFlag();
+            }
+
             player.Die();
             curHealth = maxHealth;
         }

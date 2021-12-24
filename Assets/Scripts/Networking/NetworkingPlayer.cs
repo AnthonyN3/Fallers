@@ -66,6 +66,23 @@ public class NetworkingPlayer : NetworkedPlayerBehavior
         networkObject.walking = Input.GetAxis("Vertical") + Input.GetAxis("Horizontal");
     }
 
+    public void DoSound(int soundIndex, Vector3 pos)
+    {
+        if(networkObject == null) {
+            return;
+        }
+
+        networkObject.SendRpc(RPC_PLAY_SOUND, Receivers.All, soundIndex, pos);
+    }
+
+    public override void PlaySound(RpcArgs args)
+    {
+        int soundIndex = args.GetNext<int>();
+        Vector3 soundPos = args.GetNext<Vector3>();
+
+        AudioSource.PlayClipAtPoint(SoundManager.instance.sounds[soundIndex], soundPos);
+    }
+
     public void DoJump()
     {
         if(!networkObject.IsOwner) {
