@@ -5,20 +5,33 @@ using TMPro;
 
 public class PlayerManager : MonoBehaviour
 {
+    public NetworkingPlayer player;
+
     public int maxHealth;
     public int curHealth;
 
-    public TextMeshProUGUI healthText;
-    public GameObject weaponContainer;
+    private TextMeshProUGUI healthText;
 
     private void Awake() 
     {
         curHealth = maxHealth;
+        healthText = GameObject.Find("health_text").GetComponent<TextMeshProUGUI>();
     }
 
     private void Update() 
     {
         healthText.SetText(curHealth.ToString());
+    }
+
+    public void ApplyDamage(float dmg) 
+    {
+        curHealth -= (int)dmg;
+        if(curHealth <= 0) 
+        {
+            curHealth = 0;
+            player.Die();
+            curHealth = maxHealth;
+        }
     }
     
     private void OnTriggerEnter(Collider other) 
@@ -31,7 +44,7 @@ public class PlayerManager : MonoBehaviour
         if (other.CompareTag("ammo"))
         {
             // ammo stuff
-            GunSystem weapon = weaponContainer.transform.GetChild(0).GetComponent<GunSystem>();
+            GunSystem weapon = player.currentGun;
             int ammoInPack = other.GetComponent<AmmoPack>().PickUp();
             int ammoNeeded = weapon.reservedAmmoMax - weapon.reservedAmmoCur;
 

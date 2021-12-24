@@ -71,6 +71,10 @@ public class GunSystem : MonoBehaviour
         this.muzzleFlash2 = clientViewWeapon.transform.Find("MuzzleFlashEffect").GetComponent<ParticleSystem>();
     }
 
+    public GameObject GetClientViewWeapon() {
+        return clientViewWeapon;
+    }
+
     private void Update()
     {
         if(!setup) {
@@ -125,12 +129,20 @@ public class GunSystem : MonoBehaviour
 
         Vector3 direction = cam.transform.forward + new Vector3(x, y, 0);
 
-        if (Physics.Raycast(cam.transform.position, direction, out rayHit, range, WhatIsEnemy))
+        if (Physics.Raycast(cam.transform.position, direction, out rayHit, range))
         {
             //Debug.Log(rayHit.collider.name);
             if(rayHit.collider.CompareTag("Player"))
             {
-                //TODO: Pull player from lobby mananger and check teams here
+                NetworkingPlayer networkedPlayer = rayHit.collider.transform.parent.GetComponent<NetworkingPlayer>();
+                if(networkedPlayer != null)
+                {
+                    var hitTeam = LobbyManager.Instance.GetTeam(networkedPlayer.networkObject.Owner);
+                    if(hitTeam != LobbyManager.Instance.GetTeam(player.networkObject.Owner))
+                    {
+                        player.ApplyDamage(networkedPlayer.gameObject.name, damage);
+                    }
+                }
             }
         }
 

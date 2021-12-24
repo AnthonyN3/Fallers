@@ -4,13 +4,14 @@ using UnityEngine;
 
 namespace BeardedManStudios.Forge.Networking.Generated
 {
-	[GeneratedRPC("{\"types\":[[\"uint\", \"char\"][\"int\"][\"Vector3\", \"Vector3\"]]")]
-	[GeneratedRPCVariableNames("{\"types\":[[\"playerId\", \"team\"][\"gunIndex\"][\"hitpoint\", \"hitnormal\"]]")]
+	[GeneratedRPC("{\"types\":[[\"uint\", \"char\"][\"int\"][\"Vector3\", \"Vector3\"][\"string\", \"float\"]]")]
+	[GeneratedRPCVariableNames("{\"types\":[[\"playerId\", \"team\"][\"gunIndex\"][\"hitpoint\", \"hitnormal\"][\"targetName\", \"damage\"]]")]
 	public abstract partial class NetworkedPlayerBehavior : NetworkBehavior
 	{
 		public const byte RPC_SET_TEAM = 0 + 5;
 		public const byte RPC_SET_GUN = 1 + 5;
 		public const byte RPC_SHOOT_GUN = 2 + 5;
+		public const byte RPC_DO_DAMAGE = 3 + 5;
 		
 		public NetworkedPlayerNetworkObject networkObject = null;
 
@@ -27,6 +28,7 @@ namespace BeardedManStudios.Forge.Networking.Generated
 			networkObject.RegisterRpc("SetTeam", SetTeam, typeof(uint), typeof(char));
 			networkObject.RegisterRpc("SetGun", SetGun, typeof(int));
 			networkObject.RegisterRpc("ShootGun", ShootGun, typeof(Vector3), typeof(Vector3));
+			networkObject.RegisterRpc("DoDamage", DoDamage, typeof(string), typeof(float));
 
 			networkObject.onDestroy += DestroyGameObject;
 
@@ -120,6 +122,12 @@ namespace BeardedManStudios.Forge.Networking.Generated
 		/// Vector3 hitnormal
 		/// </summary>
 		public abstract void ShootGun(RpcArgs args);
+		/// <summary>
+		/// Arguments:
+		/// string targetName
+		/// float damage
+		/// </summary>
+		public abstract void DoDamage(RpcArgs args);
 
 		// DO NOT TOUCH, THIS GETS GENERATED PLEASE EXTEND THIS CLASS IF YOU WISH TO HAVE CUSTOM CODE ADDITIONS
 	}

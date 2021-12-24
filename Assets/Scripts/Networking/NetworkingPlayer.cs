@@ -14,6 +14,8 @@ public class NetworkingPlayer : NetworkedPlayerBehavior
     public Transform gunContainer;
     public Transform clientViewGunContainer;
 
+    private Vector3 spawnPos;
+
     protected override void NetworkStart()
     {
         base.NetworkStart();
@@ -52,6 +54,8 @@ public class NetworkingPlayer : NetworkedPlayerBehavior
         networkObject.SendRpc(RPC_SET_GUN, Receivers.AllBuffered, 0);
 
         playerTransform.GetComponent<Rigidbody>().isKinematic = false;
+
+        spawnPos = transform.position;
     }
 
     public override void SetTeam(RpcArgs args)
@@ -65,9 +69,19 @@ public class NetworkingPlayer : NetworkedPlayerBehavior
         playerTransform.GetComponent<Renderer>().material.color = team == 'R' ? Color.red : Color.blue;
     }
 
+    public void PickupGun(int gunid)
+    {
+        networkObject.SendRpc(RPC_SET_GUN, Receivers.AllBuffered, gunid);
+    }
+
     public override void SetGun(RpcArgs args)
     {
         int gunIndex = args.GetNext<int>();
+
+        if(currentGun != null) {
+            Destroy(currentGun.GetClientViewWeapon());
+            Destroy(currentGun.gameObject);
+        }
 
         var weaponGO = WeaponManager.Instance.weapons[gunIndex];
         var weaponInstance = Instantiate(weaponGO);
@@ -107,6 +121,39 @@ public class NetworkingPlayer : NetworkedPlayerBehavior
         currentGun.spawnBulletHole(hitPoint, hitNormal);
         currentGun.muzzleFlash.Play();
         currentGun.muzzleFlash2.Play();
+    }
+
+    public void ApplyDamage(string targetName, float damage)
+    {
+        networkObject.SendRpc(RPC_DO_DAMAGE, Receivers.AllBuffered, targetName, damage);
+    }
+
+    public override void DoDamage(RpcArgs args)
+    {
+        string targetName = args.GetNext<string>();
+        float damage = args.GetNext<float>();
+
+        Debug.Log("Player " + networkObject.Owner.NetworkId + " damaged " + targetName + " for " + damage);
+
+        var target = GameObject.Find(targetName);
+        if(target != null) {
+            target.GetComponentInChildren<PlayerManager>().ApplyDamage(damage);
+        }
+    }
+
+    public void Die() 
+    {
+        if(networkObject == null) {
+            return;
+        }
+
+        if(networkObject.IsOwner) {
+            if(networkObject.team == 'R') {
+                transform.position = LobbyManager.Instance.RedSpawn.position;
+            } else {
+                transform.position = LobbyManager.Instance.BlueSpawn.position;
+            }
+        }
     }
 
     private void Update() 
