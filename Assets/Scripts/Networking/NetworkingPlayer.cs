@@ -356,13 +356,13 @@ public class NetworkingPlayer : NetworkedPlayerBehavior
 
     public override void EndGame(RpcArgs args)
     {
-        GameObject endScreen = canvasController.GetComponent<EndController>().endScreen;
+        GameObject endScreen = canvasController.GetComponent<CanvasController>().endScreen;
         
         char winner = args.GetNext<char>();
         endScreen.SetActive(true);
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
 
-        canvasController.GetComponent<EndController>().OnGameEnd(winner);
+        canvasController.GetComponent<CanvasController>().OnGameEnd(winner);
     }
 }

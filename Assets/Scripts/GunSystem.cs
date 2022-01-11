@@ -114,8 +114,8 @@ public class GunSystem : MonoBehaviour
             player.DoSound(2, transform.position);
         }
 
-        if(Input.GetKeyDown(KeyCode.P))
-            LobbyManager.Instance.PrintList();
+        // if(Input.GetKeyDown(KeyCode.P))
+        //     LobbyManager.Instance.PrintList();
     }
 
     private void Shoot()

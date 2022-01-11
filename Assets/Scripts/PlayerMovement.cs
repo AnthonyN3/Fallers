@@ -48,6 +48,8 @@ public class PlayerMovement : MonoBehaviour
     private Vector3 normalVector = Vector3.up;
     private Vector3 wallNormalVector;
 
+    private CanvasController canvasController;
+
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
@@ -58,6 +60,8 @@ public class PlayerMovement : MonoBehaviour
         playerScale = transform.localScale;
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+
+        canvasController = GameObject.Find("Canvas_UI").GetComponent<CanvasController>();
     }
 
     private void FixedUpdate()
@@ -65,11 +69,18 @@ public class PlayerMovement : MonoBehaviour
         Movement();
     }
 
+    private bool isPause = false;
     private void Update()
     {
-        MyInput();
-        Look();
-        //Movement();
+        if(Input.GetKeyDown(KeyCode.Escape))
+            isPause = isPause ? canvasController.OnUnPause() : canvasController.OnPause();
+
+        if(!isPause)
+        {
+            MyInput();
+            Look();
+            //Movement();
+        }
     }
 
     private float desiredX;
