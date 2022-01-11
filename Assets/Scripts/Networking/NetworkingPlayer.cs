@@ -4,7 +4,6 @@ using UnityEngine;
 using BeardedManStudios.Forge.Networking.Generated;
 using BeardedManStudios.Forge.Networking;
 using BeardedManStudios.Forge.Networking.Unity;
-using TMPro;
 
 public class NetworkingPlayer : NetworkedPlayerBehavior
 {
@@ -23,16 +22,13 @@ public class NetworkingPlayer : NetworkedPlayerBehavior
     public GameObject model;
     public Animator animator;
 
-    public GameObject endScreen;
+    public GameObject canvasController;
 
     private IEnumerator Start()
     {
         while (networkObject == null) yield return null;
-        
-        if(networkObject.IsOwner) {
-            endScreen = GameObject.Find("EndScreen");   
-            endScreen.SetActive(false);
-        } 
+
+        canvasController = GameObject.Find("Canvas_UI");   
     }
 
     protected override void NetworkStart()
@@ -360,11 +356,13 @@ public class NetworkingPlayer : NetworkedPlayerBehavior
 
     public override void EndGame(RpcArgs args)
     {
+        GameObject endScreen = canvasController.GetComponent<EndController>().endScreen;
+        
         char winner = args.GetNext<char>();
         endScreen.SetActive(true);
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
 
-        endScreen.transform.Find("Winner").GetComponent<TextMeshProUGUI>().text = winner == 'R' ? "Red Team" : "Blue Team";
+        canvasController.GetComponent<EndController>().OnGameEnd(winner);
     }
 }
