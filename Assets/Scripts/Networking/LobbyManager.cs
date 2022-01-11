@@ -11,8 +11,8 @@ public class LobbyManager : MonoBehaviour
     public static LobbyManager Instance;
     public NetworkObject ServerPlayer;
 
-    public List<BeardedManStudios.Forge.Networking.NetworkingPlayer> BlueTeam = new List<BeardedManStudios.Forge.Networking.NetworkingPlayer>();
-    public List<BeardedManStudios.Forge.Networking.NetworkingPlayer> RedTeam = new List<BeardedManStudios.Forge.Networking.NetworkingPlayer>();
+    public List<uint> BlueTeam = new List<uint>();
+    public List<uint> RedTeam = new List<uint>();
         
     
     public Transform RedSpawn;
@@ -35,28 +35,46 @@ public class LobbyManager : MonoBehaviour
 
         if(NetworkManager.Instance.Networker.IsServer)
         {
-            NetworkManager.Instance.Networker.playerDisconnected += (BeardedManStudios.Forge.Networking.NetworkingPlayer player, NetWorker networker) => {
-                var redTeamIndex = RedTeam.IndexOf(player);
-                var blueTeamIndex = BlueTeam.IndexOf(player);
-                if(redTeamIndex != -1)
+            NetworkManager.Instance.Networker.playerDisconnected += (player, sender) =>
+            {
+                MainThreadManager.Run(() =>
                 {
-                    RedTeam.RemoveAt(redTeamIndex);
-                }
-                else if(blueTeamIndex != -1)
-                {
-                    BlueTeam.RemoveAt(blueTeamIndex);
-                }
+                    //Loop through all players and find the player who disconnected, store all it's networkobjects to a list
+                    List<NetworkObject> toDelete = new List<NetworkObject>();
+                    foreach (var no in sender.NetworkObjectList)
+                    {
+                        if (no.Owner == player)
+                        {
+                            //Found him
+                            toDelete.Add(no);
+                        }
+                    }
+
+                    //Remove the actual network object outside of the foreach loop, as we would modify the collection at runtime elsewise. (could also use a return, too late)
+                    if (toDelete.Count > 0)
+                    {
+                        for (int i = toDelete.Count - 1; i >= 0; i--)
+                        {
+                            // Remove that players id from the list
+                            BlueTeam.Remove(toDelete[i].NetworkId);
+                            RedTeam.Remove(toDelete[i].NetworkId);
+                            
+                            sender.NetworkObjectList.Remove(toDelete[i]);
+                            toDelete[i].Destroy();
+                        }
+                    }
+                });
             };
         }
     }
 
-    public char GetTeam(BeardedManStudios.Forge.Networking.NetworkingPlayer player)
+    public char GetTeam(uint playerNetworkId)
     {
-        if(RedTeam.Contains(player))
+        if(RedTeam.Contains(playerNetworkId))
         {
             return 'R';
         }
-        else if(BlueTeam.Contains(player))
+        else if(BlueTeam.Contains(playerNetworkId))
         {
             return 'B';
         }
@@ -66,20 +84,20 @@ public class LobbyManager : MonoBehaviour
         }
     }
 
-    public void AddNewPlayer(char team, BeardedManStudios.Forge.Networking.Generated.NetworkedPlayerBehavior networkedPlayer)
+    public void AddNewPlayer(char team, NetworkingPlayer player, uint playerNetworkId)
     {
         if(team == 'R')
         {
-            RedTeam.Add(networkedPlayer.networkObject.Owner);
-            networkedPlayer.gameObject.transform.position = RedSpawn.position;
-            networkedPlayer.gameObject.transform.rotation = RedSpawn.rotation;
+            RedTeam.Add(playerNetworkId);
+            player.transform.position = RedSpawn.position;
+            player.transform.rotation = RedSpawn.rotation;
             Debug.Log("Spawning Red Player");
         }
         else
         {
-            BlueTeam.Add(networkedPlayer.networkObject.Owner);
-            networkedPlayer.gameObject.transform.position = BlueSpawn.position;
-            networkedPlayer.gameObject.transform.rotation = BlueSpawn.rotation;
+            BlueTeam.Add(playerNetworkId);
+            player.transform.position = BlueSpawn.position;
+            player.transform.rotation = BlueSpawn.rotation;
             Debug.Log("Spawning Blue Player");
         }
     }
@@ -99,5 +117,13 @@ public class LobbyManager : MonoBehaviour
     public void LeaveGame()
     {
         Application.Quit();
+    }
+
+    public void PrintList()
+    {
+        foreach(var id in BlueTeam)
+            Debug.Log("blue: " + id);
+        foreach(var id in RedTeam)
+            Debug.Log("red: " + id);
     }
 }

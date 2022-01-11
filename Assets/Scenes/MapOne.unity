@@ -81181,6 +81181,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1947112186}
   - component: {fileID: 1947112185}
+  - component: {fileID: 1947112187}
   m_Layer: 0
   m_Name: LobbyManager
   m_TagString: Untagged
@@ -81200,6 +81201,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0a596fb09a23ce04caaea449e6518e72, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  BlueTeam: 
+  RedTeam: 
   RedSpawn: {fileID: 92454795}
   BlueSpawn: {fileID: 2109333350}
   RedFlag: {fileID: 1355525761}
@@ -81220,6 +81223,18 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 17
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1947112187
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1947112184}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d7ce7a1f70d8cc54a8439788e0a4491e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!43 &1984289272
 Mesh:
   m_ObjectHideFlags: 0

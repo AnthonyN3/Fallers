@@ -113,6 +113,9 @@ public class GunSystem : MonoBehaviour
         {
             player.DoSound(2, transform.position);
         }
+
+        if(Input.GetKeyDown(KeyCode.P))
+            LobbyManager.Instance.PrintList();
     }
 
     private void Shoot()
@@ -143,8 +146,8 @@ public class GunSystem : MonoBehaviour
                 NetworkingPlayer networkedPlayer = rayHit.collider.transform.parent.GetComponent<NetworkingPlayer>();
                 if(networkedPlayer != null)
                 {
-                    var hitTeam = LobbyManager.Instance.GetTeam(networkedPlayer.networkObject.Owner);
-                    if(hitTeam != LobbyManager.Instance.GetTeam(player.networkObject.Owner))
+                    var hitTeam = LobbyManager.Instance.GetTeam(networkedPlayer.networkObject.NetworkId);
+                    if(hitTeam != LobbyManager.Instance.GetTeam(player.networkObject.NetworkId))
                     {
                         player.ApplyDamage(networkedPlayer.gameObject.name, damage);
                         AudioSource.PlayClipAtPoint(SoundManager.instance.sounds[3], transform.position);

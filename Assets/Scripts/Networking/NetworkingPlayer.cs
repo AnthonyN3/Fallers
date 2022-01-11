@@ -125,7 +125,7 @@ public class NetworkingPlayer : NetworkedPlayerBehavior
 
         Debug.Log("Setting your team to " + networkObject.team);
 
-        networkObject.SendRpc(RPC_SET_TEAM, Receivers.AllBuffered,  networkObject.Owner.NetworkId, networkObject.team);
+        networkObject.SendRpc(RPC_SET_TEAM, Receivers.AllBuffered,  networkObject.NetworkId, networkObject.team);
         networkObject.SendRpc(RPC_SET_GUN, Receivers.AllBuffered, 0);
 
         playerTransform.GetComponent<Rigidbody>().isKinematic = false;
@@ -140,7 +140,7 @@ public class NetworkingPlayer : NetworkedPlayerBehavior
 
         Debug.Log("Adding player " + playerId + " to team " + team);
         
-        LobbyManager.Instance.AddNewPlayer(team, this);
+        LobbyManager.Instance.AddNewPlayer(team, this, playerId);
         model.GetComponent<SkinnedMeshRenderer>().material.color = team == 'R' ? Color.red : Color.blue;
     }
 
