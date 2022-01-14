@@ -10,6 +10,7 @@
 - [Rules](#rules)
 - [Controls](#controls)
 - [Video Demo](#video-demo)
+- [Download Game](#download-game)
 
 ## Contributors
 - [Anthony Nguyen](https://github.com/AnthonyN3)
@@ -17,7 +18,8 @@
 
 ## Summary
 Fallers is a simple two team capture the flag first person shooter game. The has a simplistic and minimalistic design, heavily emphasizing on
-the movement, flow, functionality, and physics. The online networking is done using ``Forge``, a open source networking system that has very good integration with the Unity Game Engine. The basic premise of the networking is that one of the players is the host, and the rest are the clients (no dedicated servers).
+the movement, flow, functionality, and physics. The online networking is done using ``Forge``, a open source networking system that has very good integration with the Unity Game Engine. The basic premise of the networking is that one of the players is the host, and the rest are the clients (no dedicated servers).  
+`Note:` In order to get the game to work online and not just locally it will require some knowledge in port forwarding 
 
 ## Rules
 - Two teams (Blue & Red)
@@ -44,3 +46,6 @@ Game interaction is done on a traditional mouse and keyboard. The default contro
 
 ## Video Demo
 https://youtu.be/mx9I1ZhM7YQ
+
+## Download Game
+Go to ![releases](https://github.com/AnthonyN3/k-orollary/releases) to download the game.
