@@ -48,4 +48,4 @@ Game interaction is done on a traditional mouse and keyboard. The default contro
 https://youtu.be/mx9I1ZhM7YQ
 
 ## Download Game
-Go to ![releases](https://github.com/AnthonyN3/k-orollary/releases) to download the game.
+Go to ![releases](https://github.com/AnthonyN3/Fallers/releases) to download the game.
